@@ -56,7 +56,6 @@ public class ToastUI : MonoBehaviour
         // Anim end
     }
 
-    // THIS IS THE FUNCTION YOU WANTED TO ADD
     private void SetMessagePositionOnScreen(ToastPosition position)
     {
         RectTransform parentRect = uiRectTransform;
