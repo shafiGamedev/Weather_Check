@@ -2,19 +2,41 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-
 public class LocationService : MonoBehaviour
 {
+    private Action<Vector2> _cachedOnSuccess;
+    private Action<string> _cachedOnError;
+
     public void GetLocation(Action<Vector2> onSuccess, Action<string> onError)
     {
-        StartCoroutine(GetLocationCoroutine(onSuccess, onError));
+        _cachedOnSuccess = onSuccess;
+        _cachedOnError = onError;
+
+        StartCoroutine(InitializeLocationCoroutine());
     }
 
-    private IEnumerator GetLocationCoroutine(Action<Vector2> onSuccess, Action<string> onError)
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (hasFocus)
+        {
+            if (Input.location.status == LocationServiceStatus.Stopped ||
+                Input.location.status == LocationServiceStatus.Failed)
+            {
+                Debug.Log("App resumed, attempting to restart location service.");
+
+                if (_cachedOnSuccess != null && _cachedOnError != null)
+                {
+                    StartCoroutine(InitializeLocationCoroutine());
+                }
+            }
+        }
+    }
+
+    private IEnumerator InitializeLocationCoroutine()
     {
         if (!Input.location.isEnabledByUser)
         {
-            onError?.Invoke("Location not enabled.");
+            _cachedOnError?.Invoke("Location service is not enabled by user.");
             yield break;
         }
 
@@ -27,23 +49,23 @@ public class LocationService : MonoBehaviour
             maxWait--;
         }
 
-        // Service didn't initialize
         if (maxWait < 1)
         {
-            onError?.Invoke("Timed out initializing location.");
+            _cachedOnError?.Invoke("Timed out initializing location.");
             yield break;
         }
 
         if (Input.location.status == LocationServiceStatus.Failed)
         {
-            onError?.Invoke("Unable to determine device location.");
+            _cachedOnError?.Invoke("Unable to determine device location.");
         }
         else
         {
+            // Success!
             Vector2 coordinates = new Vector2(Input.location.lastData.latitude, Input.location.lastData.longitude);
-            onSuccess?.Invoke(coordinates);
-        }
+            Debug.Log($"Location Service Success: {coordinates}");
 
-        Input.location.Stop();
+            _cachedOnSuccess?.Invoke(coordinates);
+        }
     }
 }

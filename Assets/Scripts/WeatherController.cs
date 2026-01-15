@@ -8,17 +8,22 @@ public class WeatherController : MonoBehaviour
 
     private void Start()
     {
+        FetchLocation();
+    }
+
+    public void FetchLocation()
+    {
         locationService.GetLocation(
-            (coordinates) =>
-            {
-                Debug.Log($"Location Found: {coordinates}");
-                apiService.GetWeather(coordinates.x, coordinates.y, OnWeatherSuccess, OnWeatherError);
-            },
-            (errorMessage) =>
-            {
-                ToastSpawner.Show(errorMessage, ToastPosition.MiddleCenter);
-            }
-        );
+                    (coordinates) =>
+                    {
+                        Debug.Log($"Location Found: {coordinates}");
+                        apiService.GetWeather(coordinates.x, coordinates.y, OnWeatherSuccess, OnWeatherError);
+                    },
+                    (errorMessage) =>
+                    {
+                        ToastSpawner.Show(errorMessage, ToastPosition.MiddleCenter);
+                    }
+                );
     }
 
     private void OnWeatherSuccess(WeatherResponse response)
@@ -27,7 +32,7 @@ public class WeatherController : MonoBehaviour
         {
             float temp = response.daily.temperature_2m_max[0];
             string message = $"Temp: {temp}°C";
-            ToastSpawner.Show(message, ToastPosition.MiddleCenter);
+            ToastSpawner.Show(message, ToastPosition.BottomCenter);
         }
         else
         {
