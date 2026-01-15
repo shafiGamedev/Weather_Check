@@ -143,9 +143,4 @@ public class ToastUI : MonoBehaviour
         StopAllCoroutines();
         uiCanvasGroup.alpha = 0f;
     }
-
-    private void OnDestroy()
-    {
-        ToastSpawner.isLoaded = false;
-    }
 }

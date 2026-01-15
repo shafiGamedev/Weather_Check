@@ -1,0 +1,10 @@
+{
+  "name": "com.company.toast-system",
+  "version": "1.0.0",
+  "displayName": "Toast & Snackbar System",
+  "unity": "2022.3",
+  "description": "Cross-platform Toast system for Android and iOS",
+  "author": {
+    "name": "Shafi_CleverTap"
+  }
+}
